@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HERE Map Example</title>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <style>
+      #map {
+        height: 800px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script>
+      var platform = new H.service.Platform({
+        apikey: "c1lIMeVcLn7cMRtkrREZZhXtrOkAbUFhZGh7MFy6rh8",
+        app_id: "xinw17hVUb5hdw7tbvOn",
+      });
+
+      var defaultLayers = platform.createDefaultLayers();
+      var map = new H.Map(
+        document.getElementById("map"),
+        defaultLayers.vector.normal.map,
+        {
+          center: { lat: 20.5937, lng: 78.9629 },
+          zoom: 5,
+          pixelRatio: window.devicePixelRatio || 1,
+        }
+      );
+
+      var mapEvents = new H.mapevents.MapEvents(map);
+      var behavior = new H.mapevents.Behavior(mapEvents);
+
+      var ui = H.ui.UI.createDefault(map, defaultLayers);
+      var marker = new H.map.Marker({ lat: 20.5937, lng: 78.9629 });
+      map.addObject(marker);
+    </script>
+  </body>
+</html>
