@@ -1,2 +1,5 @@
 Django==5.0.1
 requests==2.31.0
+numpy == 1.26.4
+overpy==0.7
+geopy==2.4.1
