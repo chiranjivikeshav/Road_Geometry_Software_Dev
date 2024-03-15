@@ -39,7 +39,6 @@ def save_coordinates(request):
     else:
         return render(request,'home.html')
     return render(request,'home.html')
-
 import overpy
 from decimal import Decimal
 
