@@ -49,8 +49,8 @@ def save_coordinates(request):
 def get_nearby_road_segment(coord, num_points=10, radius=100):
     api = overpy.Overpass()
     lat, lon = map(Decimal, coord)
-    bbox = (lat - Decimal('0.01'), lon - Decimal('0.01'),
-            lat + Decimal('0.01'), lon + Decimal('0.01'))
+    bbox = (lat - Decimal('0.001'), lon - Decimal('0.001'),
+            lat + Decimal('0.001'), lon + Decimal('0.001'))
     query = f"""
     [out:json];
     way["highway"](around:{radius},{lat},{lon});
@@ -105,11 +105,8 @@ def calculate_radius(points):
 
 
 def get_road_segment(latitude, longitude, radius=1000):
-    # OpenStreetMap API endpoint for retrieving road segments
     api_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}&zoom=18&addressdetails=1"
-    # Sending request to OpenStreetMap API
     response = requests.get(api_url)
-    # Checking if request was successful
     if response.status_code == 200:
         data = response.json()
         road_name = data.get('address', {}).get('road', None)
