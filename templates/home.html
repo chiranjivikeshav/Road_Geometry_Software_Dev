@@ -1,100 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-        <title>Map</title>
-    </head>
-    <style>
-        html {
-            background: #fff;
-        }
-        .wrap {
-            width: 1200px;
-            margin: 30px auto;
-        }
-        .form {
-            position: relative;
-            align-items: center;
-            text-align: center;
-            justify-content: space-evenly;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <title>Map</title>
+  </head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
 
-        .form input {
-            width: 20%;
-            padding: 20px;
-            font-size: 1em;
-            margin-bottom: 5px;
-            background: #fff;
-            border: 5px solid black;
-            border-radius: 10px;
-        }
-        .form input:focus {
-            background: #fff;
-        }
-        .form .form__btn {
-            color: #fff;
-            background: rgb(63, 192, 46);
-        }
-        #map {
-            width: 100vw;
-            height: 100vh;
-            border-radius: 5px;
-        }
-    </style>
-    <body>
-        <div class="wrap">
-            <form action="" class="form">
-                {% csrf_token %}
-                <input type="text" placeholder="Latitude" id="lat" />
-                <input type="text" placeholder="Longitude" id="long" />
-            </form>
-        </div>
-        <div id="map"></div>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-        <script src="script.js"></script>
-    </body>
-    <script>
-        let mapOptions = {
-            center: [23.473324, 77.947998],
-            zoom: 10,
-        };
-        let map = new L.map("map", mapOptions);
+    html {
+      background: #fff;
+    }
 
-        let layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-        map.addLayer(layer);
-        let marker = null;
-        const csrf_token = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+    #coordinates {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border: 1px solid black;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+    #coordinates input {
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
+    #coordinates button {
+      border-radius: 5px;
+    }
+  </style>
+  <body>
+    <div id="coordinates">
+      <label for="latitude">Latitude:</label>
+      <input type="text" id="lat" /> <br />
+      <label for="longitude">Longitude:</label>
+      <input type="text" id="long" /><br />
+      <button id="submitBtn">Submit</button>
+    </div>
+    <div id="map"></div>
 
-        map.on("click", (event) => {
-            if (marker != null) {
-                map.removeLayer(marker);
-            }
-            marker = L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="script.js"></script>
+  </body>
+  <script>
+    let mapOptions = {
+      center: [23.473324, 77.947998],
+      zoom: 10,
+    };
+    let map = new L.map("map", mapOptions);
 
-            document.getElementById("lat").value = event.latlng.lat;
-            document.getElementById("long").value = event.latlng.lng;
-            const data = new URLSearchParams({
-                latitude: event.latlng.lat,
-                longitude: event.latlng.lng,
-                csrfmiddlewaretoken: csrf_token,
-            });
+    let layer = new L.TileLayer(
+      "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    );
+    map.addLayer(layer);
+    let marker = null;
 
-            fetch("/api/save-coordinates/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: data,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+    map.on("click", (event) => {
+      if (marker != null) {
+        map.removeLayer(marker);
+      }
+      marker = L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
+
+      const data = new URLSearchParams({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      });
+
+      fetch("/api/save-coordinates/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
         });
-    </script>
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", function () {
+      let latitude = parseFloat(document.getElementById("lat").value);
+      let longitude = parseFloat(document.getElementById("long").value);
+
+      if (isNaN(latitude) || isNaN(longitude)) {
+        alert("Please enter valid latitude and longitude values.");
+        return;
+      }
+
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker([latitude, longitude]).addTo(map);
+      map.setView([latitude, longitude], 10);
+
+      const data = new URLSearchParams({
+        latitude: latitude,
+        longitude: longitude,
+      });
+
+      fetch("/api/save-coordinates/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    });
+  </script>
 </html>
