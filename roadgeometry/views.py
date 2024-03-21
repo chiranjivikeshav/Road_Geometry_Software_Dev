@@ -1,13 +1,11 @@
 import overpy
 from decimal import Decimal
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import requests
-import math
-import numpy as np
-from math import radians, sin, cos, sqrt, atan2
 from geopy.distance import geodesic
+import numpy as np
 
 
 def home(request):
@@ -49,8 +47,8 @@ def save_coordinates(request):
 def get_nearby_road_segment(coord, num_points=10, radius=100):
     api = overpy.Overpass()
     lat, lon = map(Decimal, coord)
-    bbox = (lat - Decimal('0.001'), lon - Decimal('0.001'),
-            lat + Decimal('0.001'), lon + Decimal('0.001'))
+    bbox = (lat - Decimal('0.01'), lon - Decimal('0.01'),
+            lat + Decimal('0.01'), lon + Decimal('0.01'))
     query = f"""
     [out:json];
     way["highway"](around:{radius},{lat},{lon});
@@ -70,27 +68,31 @@ def get_nearby_road_segment(coord, num_points=10, radius=100):
 
 def radius_of_curvature(segment, given_point):
     all_radius = []
-    for point in segment:
-        lat_diff = given_point[0] - point[0]
-        long_diff = given_point[1] - point[1]
-        for point1 in segment:
-            if (point != point1):
-                lat_diff1 = given_point[0] - point1[0]
-                long_diff1 = given_point[1] - point1[1]
-                if (lat_diff*lat_diff1 < 0 or long_diff*long_diff1 < 0):
-                    points = [point, point1, given_point]
+    for i in range(len(segment)):
+        for j in range(i + 1, len(segment)):
+            for k in range(j + 1, len(segment)):
+                points = [segment[i], segment[j], segment[k]]
+                if not are_points_collinear(points):
                     radius = calculate_radius(points)
-                    print(radius)
                     all_radius.append(radius)
 
-    all_radius.sort()
-    if (len(all_radius) % 2 != 0):
-        print("ROC at the given point is ", all_radius[len(all_radius) // 2])
-    elif (len(all_radius) == 0):
-        print("ROC at the given point is ", 0)
-    elif (len(all_radius) % 2 == 0):
-        print("ROC at the given point is ", (all_radius[len(
-            all_radius) // 2] + all_radius[(len(all_radius) // 2) - 1]) / 2)
+    all_radius = [r for r in all_radius if r is not None]
+    if all_radius:
+        median_radius = np.median(all_radius)
+        print("ROC at the given point is ", median_radius)
+    else:
+        print("No valid ROC calculated.")
+
+
+def are_points_collinear(points):
+    (lat1, lon1), (lat2, lon2), (lat3, lon3) = points
+    d12 = geodesic((lat1, lon1), (lat2, lon2)).meters
+    d13 = geodesic((lat1, lon1), (lat3, lon3)).meters
+    d23 = geodesic((lat2, lon2), (lat3, lon3)).meters
+
+    if np.isclose(d12 + d23, d13) or np.isclose(d13 + d12, d23) or np.isclose(d13 + d23, d12):
+        return True
+    return False
 
 
 def calculate_radius(points):
@@ -102,27 +104,3 @@ def calculate_radius(points):
     radius = (d12 * d13 * d23) / \
         (4 * (s * (s - d12) * (s - d13) * (s - d23))) ** 0.5
     return radius
-
-
-def get_road_segment(latitude, longitude, radius=1000):
-    api_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}&zoom=18&addressdetails=1"
-    response = requests.get(api_url)
-    if response.status_code == 200:
-        data = response.json()
-        road_name = data.get('address', {}).get('road', None)
-        start_point = (float(data.get('boundingbox', [])[0]),
-                       float(data.get('boundingbox', [])[2]))
-        end_point = (float(data.get('boundingbox', [])[1]),
-                     float(data.get('boundingbox', [])[3]))
-
-        if road_name:
-            print(f"Found road segment: {road_name}")
-            print(f"Start point: {start_point}")
-            print(f"End point: {end_point}")
-            return road_name, start_point, end_point
-        else:
-            print("No road segment found at the given coordinates.")
-            return None, None, None
-    else:
-        print("Failed to retrieve road segment. Please try again later.")
-        return None, None, None
