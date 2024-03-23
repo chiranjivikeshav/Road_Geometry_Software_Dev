@@ -1,5 +1,13 @@
+asgiref==3.7.2
+certifi==2024.2.2
+charset-normalizer==3.3.2
 Django==5.0.1
-requests==2.31.0
-numpy == 1.26.4
-overpy==0.7
+geographiclib==2.0
 geopy==2.4.1
+idna==3.6
+numpy==1.26.4
+overpy==0.7
+requests==2.31.0
+sqlparse==0.4.4
+tzdata==2023.4
+urllib3==2.2.1
