@@ -27,14 +27,18 @@ def save_coordinates(request):
                 print("YES")
                 coord = (float(latitude), float(longitude))
                 # print(get_road_segment(latitude,longitude))
-                segment = get_nearby_road_segment(coord)
-                for i, j in segment:
+                segment2 = get_nearby_road_segment(coord)
+                for i, j in segment2:
                     if (geodesic((i, j), coord).meters > 50):
-                        segment.remove((i, j))
+                        segment2.remove((i, j))
                 print("Nearby coordinates along the road segment:")
-                for i, point in enumerate(segment, 1):
+                for i, point in enumerate(segment2, 1):
                     print(f"{i}. {point}")
-                radius_of_curvature(segment, coord)
+                radius_of_curvature(segment2, coord)
+                segment = get_nearby_road_segment(coord, 30, 100)
+                ans = find_pt_pc(segment, segment2, coord)
+                print(ans[0])
+                print(ans[1])
             else:
                 print("NO")
         else:
@@ -82,6 +86,7 @@ def radius_of_curvature(segment, given_point):
         print("ROC at the given point is ", median_radius)
     else:
         print("No valid ROC calculated.")
+    return median_radius
 
 
 def are_points_collinear(points):
@@ -104,3 +109,60 @@ def calculate_radius(points):
     radius = (d12 * d13 * d23) / \
         (4 * (s * (s - d12) * (s - d13) * (s - d23))) ** 0.5
     return radius
+
+
+def find_pt_pc(segment, segment2, given_point):
+    left = []
+    right = []
+    for point in segment:
+        distance = geodesic(
+            (given_point[0], given_point[1]), (point[0], point[1])).meters
+        if point[0] < given_point[0] or (point[0] == given_point[0] and point[1] < given_point[1]):
+            left.append((point, distance))
+        else:
+            right.append((point, distance))
+
+    left = sorted(left, key=lambda x: x[1])
+    right = sorted(right, key=lambda x: x[1])
+
+    left = [point[0] for point in left]
+    right = [point[0] for point in right]
+
+    given_roc = radius_of_curvature(segment2, given_point)
+    pt = None
+    for point in left:
+        segment3 = get_nearby_road_segment(point)
+        point_roc = radius_of_curvature(segment3, point)
+        if point_roc is not None and abs(point_roc - given_roc) >= 200.00:
+            pt = point
+            break
+
+    diff = float('-inf')
+    if pt == None:
+        for point in left:
+            segment3 = get_nearby_road_segment(point)
+            point_roc = radius_of_curvature(segment3, point)
+            difference = abs(point_roc - given_roc)
+            if point_roc is not None and difference > diff:
+                diff = difference
+                pt = point
+
+    pc = None
+    for point in right:
+        segment4 = get_nearby_road_segment(point)
+        point_roc2 = radius_of_curvature(segment4, point)
+        if point_roc2 is not None and abs(point_roc2 - given_roc) >= 200.00:
+            pc = point
+            break
+
+    diff = float('-inf')
+    if pc == None:
+        for point in right:
+            segment4 = get_nearby_road_segment(point)
+            point_roc = radius_of_curvature(segment4, point)
+            difference = abs(point_roc - given_roc)
+            if point_roc is not None and difference > diff:
+                diff = difference
+                pc = point
+
+    return pt, pc
