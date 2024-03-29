@@ -230,6 +230,7 @@
           }
         })
         .catch(error => {
+          document.getElementById('loader').style.display = 'none';
           updatePopup('Error', error.message);
         });
         
@@ -304,6 +305,7 @@
            }
          })
          .catch(error => {
+          document.getElementById('loader').style.display = 'none';
            updatePopup('Error', error.message);
          });
          
