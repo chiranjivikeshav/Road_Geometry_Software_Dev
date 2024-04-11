@@ -24,11 +24,7 @@ def save_coordinates(request):
         response = requests.get(osrm_url)
         data = response.json()
         if 'code' in data and data['code'] == 'Ok':
-<<<<<<< HEAD
             if data['waypoints'][0]['distance'] <= 5:
-=======
-            if data['waypoints'][0]['distance'] <= 10:
->>>>>>> bbf1501c57418aa4b6e79b8bfa7009066c6de36d
                 coord = (float(latitude), float(longitude))
                 segment2 = get_nearby_road_segment(coord)
 
