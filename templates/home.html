@@ -112,8 +112,8 @@
 
     .popup .popup-close-btn {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 1px;
+      right: 5px;
       font-size: 40px;
       cursor: pointer;
       color: #aaa;
@@ -138,7 +138,7 @@
     <!--=========POP UP ===============-->
     <div id="customPopup" class="popup">
       <div class="popup-content">
-        <!--========LODER HTML=========-->
+        <!--========LOADER HTML=========-->
         <div id="loader" class="loader"></div>
         <span class="popup-close-btn" onclick="closePopup()">&times;</span>
         <h2 id="popupTitle"></h2>
@@ -160,7 +160,7 @@
       document.getElementById("customPopup").style.display = "block";
     }
 
-    //=======pop up data updated on responce come =======
+    //=======pop up data updated on response come =======
     function updatePopup(title, message) {
       document.getElementById("popupTitle").textContent = title;
       document.getElementById("popupMessage").innerHTML = message;
@@ -205,7 +205,7 @@
         },
         body: data,
       })
-        //==========recieving request ============
+        //==========receiving request ============
         .then((response) => {
           document.getElementById("loader").style.display = "none";
           if (!response.ok) {
@@ -276,7 +276,7 @@
         },
         body: data,
       })
-        //==========recieving request ============
+        //==========receiving request ============
         .then((response) => {
           document.getElementById("loader").style.display = "none";
           if (!response.ok) {
@@ -285,7 +285,7 @@
           return response.json();
         })
         .then((data) => {
-          //===========Formate the data=================
+          //===========Format the data=================
           if (
             data &&
             data.coordinate &&
