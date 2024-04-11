@@ -24,15 +24,15 @@ def save_coordinates(request):
         response = requests.get(osrm_url)
         data = response.json()
         if 'code' in data and data['code'] == 'Ok':
-            if data['waypoints'][0]['distance'] <= 25:
+            if data['waypoints'][0]['distance'] <= 5:
                 coord = (float(latitude), float(longitude))
                 segment2 = get_nearby_road_segment(coord)
 
                 for i, j in segment2:
-                    if (geodesic((i, j), coord).meters > 50):
+                    if (geodesic((i, j), coord).meters > 25):
                         segment2.remove((i, j))
                 radius  =  radius_of_curvature(segment2, coord)
-                segment = get_nearby_road_segment(coord, 30, 100)
+                segment = get_nearby_road_segment(coord, 20, 100)
                 road_name = get_road_name(latitude,longitude)
                 ans = find_pt_pc(segment, segment2, coord)
                 data = {

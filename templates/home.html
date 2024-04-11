@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link
-         rel="stylesheet"
-         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-         crossorigin=""
-         />
-      <title>Map</title>
-   </head>
-   <style>
-      body {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <title>Map</title>
+  </head>
+  <style>
+    body {
       margin: 0;
       padding: 0;
-      }
-      #map {
+    }
+
+    #map {
       position: absolute;
       width: 100vw;
       height: 100vh;
       margin: 0;
       padding: 0;
-      z-index:1;
-      }
-      html {
+      z-index: 1;
+    }
+
+    html {
       background: #fff;
-      }
-      #coordinates {
+    }
+
+    #coordinates {
       position: absolute;
       top: 10px;
       right: 10px;
@@ -36,17 +39,18 @@
       border: 1px solid black;
       border-radius: 5px;
       z-index: 1000;
-      }
-      #coordinates input {
+    }
+
+    #coordinates input {
       margin-bottom: 5px;
       border-radius: 5px;
-      }
-      #coordinates button {
+    }
+
+    #coordinates button {
       border-radius: 5px;
-      }
-      
-      /* Popup styling */
-      .popup {
+    }
+
+    .popup {
       display: none;
       position: fixed;
       top: 0;
@@ -55,161 +59,233 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
-      }
-      /* Popup content styling */
-      .popup .popup-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #FFEBCD;
-        padding: 20px;
-        height:auto;
-        width:300px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 16px;
-        
-      }
-      .popup .popup-content h2{
-        color:#3498db;
-        
-      }
-      /* Loader styling */
-      .popup .loader-container {
+    }
+
+    .popup .popup-content {
       position: absolute;
-      margin-left:50px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ffebcd;
+      padding: 20px;
+      height: auto;
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+        sans-serif;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .popup .popup-content h2 {
+      color: #3498db;
+    }
+
+    .popup .loader-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       display: none;
-      
-      }
-      .popup .loader {
+    }
+
+    .popup .loader {
       border: 8px solid #fff;
       border-top: 8px solid #3498db;
       border-radius: 50%;
       width: 50px;
       height: 50px;
       animation: spin 1s linear infinite;
-      }
-      /* Loader spin animation */
-      @keyframes spin {
+      margin: 0px auto;
+      padding: 0;
+    }
+
+    @keyframes spin {
       0% {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
       }
       100% {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
       }
-      }
-      /* Close button styling */
-      .popup .popup-close-btn {
+    }
+
+    .popup .popup-close-btn {
       position: absolute;
       top: 10px;
       right: 10px;
       font-size: 40px;
       cursor: pointer;
       color: #aaa;
-      }
-      .popup .popup-close-btn:hover,
-      .popup .popup-close-btn:focus {
+    }
+
+    .popup .popup-close-btn:hover,
+    .popup .popup-close-btn:focus {
       color: black;
       text-decoration: none;
-      }
-   </style>
-   <body>
-      <div id="coordinates">
-         <label for="latitude">Latitude:</label>
-         <input type="text" id="lat" /> <br />
-         <label for="longitude">Longitude:</label>
-         <input type="text" id="long" /><br />
-         <button id="submitBtn">Submit</button>
+    }
+  </style>
+  <body>
+    <div id="coordinates">
+      <label for="latitude">Latitude:</label>
+      <input type="text" id="lat" /> <br />
+      <label for="longitude">Longitude:</label>
+      <input type="text" id="long" /><br />
+      <button id="submitBtn">Submit</button>
+    </div>
+    <div id="map"></div>
+
+    <!--=========POP UP ===============-->
+    <div id="customPopup" class="popup">
+      <div class="popup-content">
+        <!--========LODER HTML=========-->
+        <div id="loader" class="loader"></div>
+        <span class="popup-close-btn" onclick="closePopup()">&times;</span>
+        <h2 id="popupTitle"></h2>
+        <p id="popupMessage"></p>
       </div>
-      <div id="map"></div>
+    </div>
 
-      <!--=========POP UP ===============-->
-      <div id="customPopup" class="popup">
-         <div class="popup-content">
-            <!--========LODER HTML=========-->
-            <div id="loader" class="loader"></div>
-            <span class="popup-close-btn" onclick="closePopup()">&times;</span>
-            <h2 id="popupTitle"></h2>
-            <p id="popupMessage"></p>
-         </div>
-      </div>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+  </body>
+  <script>
+    // ====== pop up display on post request sent ======
+    function openPopup(title, message) {
+      document.getElementById("popupTitle").textContent = title;
+      document.getElementById("popupMessage").textContent = message;
+      document.getElementById("customPopup").style.display = "block";
+    }
 
+    //=======pop up data updated on responce come =======
+    function updatePopup(title, message) {
+      document.getElementById("popupTitle").textContent = title;
+      document.getElementById("popupMessage").innerHTML = message;
+    }
+    //======= pop up close ==============================
+    function closePopup() {
+      document.getElementById("customPopup").style.display = "none";
+    }
 
-      <script
-         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-         crossorigin=""
-         ></script>
-      
-   </body>
-   <script>
-      // ====== pop up display on post request sent ======
-      function openPopup(title, message) {
-       document.getElementById('popupTitle').textContent = title;
-       document.getElementById('popupMessage').textContent = message;
-       document.getElementById('customPopup').style.display = 'block';
+    //========== FOR MAP CLICK EVENT ==================
+    let mapOptions = {
+      center: [23.473324, 77.947998],
+      zoom: 10,
+    };
+    let map = new L.map("map", mapOptions);
+
+    let layer = new L.TileLayer(
+      "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    );
+    map.addLayer(layer);
+    let marker = null;
+
+    map.on("click", (event) => {
+      // ========Opening pop up and loader ===========
+      openPopup("Loading", "Please wait...");
+      document.getElementById("loader").style.display = "block";
+
+      if (marker != null) {
+        map.removeLayer(marker);
       }
-      
-      //=======pop up data updated on responce come =======
-      function updatePopup(title, message) {
-       document.getElementById('popupTitle').textContent = title;
-       document.getElementById('popupMessage').innerHTML = message;
-      
-      }
-      //======= pop up close ==============================
-      function closePopup() {
-       document.getElementById('customPopup').style.display = 'none';
-      }
-      
-      
-      //========== FOR MAP CLICK EVENT ==================
-       let mapOptions = {
-         center: [23.473324, 77.947998],
-         zoom: 10,
-       };
-       let map = new L.map("map", mapOptions);
-       
-       let layer = new L.TileLayer(
-         "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-       );
-       map.addLayer(layer);
-       let marker = null;
-      
-       map.on("click", (event) => {
-         // ========Opening pop up and loader ===========
-         openPopup('Loading...', 'Please wait!');
-         document.getElementById('loader').style.display = 'block';
-      
-         if (marker != null) {
-           map.removeLayer(marker);
-         }
-         marker = L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
-      
-         const data = new URLSearchParams({
-           latitude: event.latlng.lat,
-           longitude: event.latlng.lng,
-         });
-         // ==========sending post request ========
-         fetch("/api/save-coordinates/", {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/x-www-form-urlencoded",
-           },
-           body: data,
-         })
-         //==========recieving request ============
-         .then(response => {
-           document.getElementById('loader').style.display = 'none';
+      marker = L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
+
+      const data = new URLSearchParams({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      });
+      // ==========sending post request ========
+      fetch("/api/save-coordinates/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      })
+        //==========recieving request ============
+        .then((response) => {
+          document.getElementById("loader").style.display = "none";
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error("Network response was not ok");
           }
           return response.json();
         })
-        .then(data => {
-        //===========Formate the data=================
+        .then((data) => {
+          //===========Format the data=================
+          if (
+            data &&
+            data.coordinate &&
+            data.radius !== undefined &&
+            data.pc &&
+            data.pt
+          ) {
+            let lati = data.coordinate[0].toFixed(7);
+            let longi = data.coordinate[1].toFixed(7);
+            const formattedData = `
+            <p>Coordinate: [${lati}, ${longi}]</p>
+            <p>Road Name: ${data.road_name}</p>
+            <p>Curvature Radius: ${data.radius.toFixed(3)} meters</p>
+            <p>Point of Curvature: [${data.pc[0]}, ${data.pc[1]}]</p>
+            <p>Point of Tangency: [${data.pt[0]}, ${data.pt[1]}]</p>
+            `;
+            updatePopup("Road Geometry Data", formattedData);
+          } else {
+            updatePopup("Error", data["message"]);
+          }
+        })
+        .catch((error) => {
+          document.getElementById("loader").style.display = "none";
+          updatePopup("Error", error.message);
+        });
+    });
+
+    // ================ FOR INPUT LATITUDE AND LONGITUDE EVENT ================
+    document.getElementById("submitBtn").addEventListener("click", function () {
+      // ========Opening pop up and loader ===========
+      openPopup("Loading", "Please wait...");
+      document.getElementById("loader").style.display = "block";
+
+      let latitude = parseFloat(document.getElementById("lat").value);
+      let longitude = parseFloat(document.getElementById("long").value);
+
+      if (isNaN(latitude) || isNaN(longitude)) {
+        document.getElementById("loader").style.display = "none";
+        updatePopup("Success", "Please input valid input");
+        return;
+      }
+
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker([latitude, longitude]).addTo(map);
+      map.setView([latitude, longitude], 16);
+
+      const data = new URLSearchParams({
+        latitude: latitude,
+        longitude: longitude,
+      });
+
+      fetch("/api/save-coordinates/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      })
+        //==========recieving request ============
+        .then((response) => {
+          document.getElementById("loader").style.display = "none";
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          //===========Formate the data=================
           if (
             data &&
             data.coordinate &&
@@ -218,100 +294,21 @@
             data.pt
           ) {
             const formattedData = `
-            <p>Coordinate: [${data.coordinate[0]}, ${data.coordinate[1]}]</p>
-            <p>Road Name: ${data.road_name}</p>
-            <p>Curvature Radius: ${data.radius.toFixed(3)} meters</p>
-            <p>Point of Curvature: [${data.pc[0]}, ${data.pc[1]}]</p>
-            <p>Point of Tangency: [${data.pt[0]}, ${data.pt[1]}]</p>
-            `;
-            updatePopup('Road Geometry Data', formattedData);
-          } else {
-            updatePopup('Error',data["message"]);
-          }
-        })
-        .catch(error => {
-          document.getElementById('loader').style.display = 'none';
-          updatePopup('Error', error.message);
-        });
-        
-         
-         
-       });
-      
-      
-      
-      // ================ FOR INPUT LATITUDE AND LONGITUDE EVENT ================
-       document.getElementById("submitBtn").addEventListener("click", function () {
-      
-          // ========Opening pop up and loader ===========
-          openPopup('Loading', 'Please wait...');
-          document.getElementById('loader').style.display = 'block';
-      
-         let latitude = parseFloat(document.getElementById("lat").value);
-         let longitude = parseFloat(document.getElementById("long").value);
-      
-         if (isNaN(latitude) || isNaN(longitude)) {
-           document.getElementById('loader').style.display = 'none';
-           updatePopup('Success', 'Please input valid input');
-           return;
-         }
-      
-         if (marker) {
-           map.removeLayer(marker);
-         }
-      
-         marker = L.marker([latitude, longitude]).addTo(map);
-         map.setView([latitude, longitude], 16);
-      
-         const data = new URLSearchParams({
-           latitude: latitude,
-           longitude: longitude,
-         });
-      
-         fetch("/api/save-coordinates/", {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/x-www-form-urlencoded",
-           },
-           body: data,
-         })
-          //==========recieving request ============
-          .then(response => {
-            document.getElementById('loader').style.display = 'none';
-           if (!response.ok) {
-             throw new Error('Network response was not ok');
-           }
-           return response.json();
-         })
-         .then(data => {
-         //===========Formate the data=================
-           if (
-             data &&
-             data.coordinate &&
-             data.radius !== undefined &&
-             data.pc &&
-             data.pt
-           ) {
-             const formattedData = `
                <p>Coordinate: [${data.coordinate[0]}, ${data.coordinate[1]}]</p>
                <p>Road Name: ${data.road_name}</p>
                <p>Curvature Radius: ${data.radius.toFixed(3)}  meters</p>
                <p>Point of Curvature: [${data.pc[0]}, ${data.pc[1]}]</p>
                <p>Point of Tangency: [${data.pt[0]}, ${data.pt[1]}]</p>
              `;
-             updatePopup('Road Geometry Data', formattedData);
-           } else {
-             updatePopup('Error',data["message"]);
-           }
-         })
-         .catch(error => {
-          document.getElementById('loader').style.display = 'none';
-           updatePopup('Error', error.message);
-         });
-         
-       });
-      
-      
-      
-   </script>
+            updatePopup("Road Geometry Data", formattedData);
+          } else {
+            updatePopup("Error", data["message"]);
+          }
+        })
+        .catch((error) => {
+          document.getElementById("loader").style.display = "none";
+          updatePopup("Error", error.message);
+        });
+    });
+  </script>
 </html>
