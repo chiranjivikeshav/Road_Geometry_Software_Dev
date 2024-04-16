@@ -1,6 +1,8 @@
-# Road_Geometry_Software_Dev
+# Road Map Geometry
 
-Project description goes here. Explain what this project does and who it's for. You can briefly mention the main features or use cases.
+Road Map Geometry is a web-based application designed to calculate and display geometric properties of roads, such as the radius of curvature, road names, points of tangent, and points of curvature. This project utilizes Django and integrates data from OpenStreetMap to provide detailed and accurate road analysis.
+
+![Screenshot (310)](https://github.com/chiranjivikeshav/Road_Geometry_Software_Dev/assets/117706982/cee4a416-59e0-4002-9984-a1f90c8dedd3)
 
 ## Getting Started
 
