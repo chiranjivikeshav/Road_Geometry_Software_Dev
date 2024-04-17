@@ -64,7 +64,7 @@ Contributions are what makes the open-source community such an amazing place to 
 
 1. Fork the Project: You can Folk the repository form [GitHub page](https://github.com/chiranjivikeshav/Road_Geometry_Software_Dev). There is a folk button on the top-right corner.
 2. Follow the installation process which is described above. Make sure you clone the repository instead of downloading it and 
-now for cloning the command is <br>
+now for cloning, the command is <br>
 `git clone https://github.com/YOUR_GITHUB_USERNAME/Road_Geometry_Software_Dev.git`.
 4. Create the Feature to which you want to contribute.
 5. Add your change using (`git add . `).
