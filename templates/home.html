@@ -34,25 +34,26 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background:  #AEB6BF;
+      background: #d3d3d3;
       padding: 10px;
       border: 1px solid black;
       border-radius: 5px;
       z-index: 1000;
       item-align: center;
-      display:flex;
-      flex-flow:column;
+      display: flex;
+      flex-flow: column;
     }
 
     #coordinates input {
-      height:30px;
+      height: 25px;
+      width: 200px;
     }
 
     #coordinates button {
-      padding:5px;
-      color:white;
-      background:#17202A;
-      cursor:pointer;
+      padding: 5px;
+      color: white;
+      background: #082c6c;
+      cursor: pointer;
     }
 
     .popup {
@@ -71,20 +72,21 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: #ffebcd;
+      background-color: #d3d3d3;
       padding: 20px;
       height: auto;
       width: 300px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
       font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
         sans-serif;
       font-size: 16px;
       text-align: center;
+      color: #082c6c;
     }
 
     .popup .popup-content h2 {
-      color: #3498db;
+      color: #082c6c;
     }
 
     .popup .loader-container {
@@ -97,7 +99,7 @@
 
     .popup .loader {
       border: 8px solid #fff;
-      border-top: 8px solid #3498db;
+      border-top: 8px solid #082c6c;
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -133,17 +135,17 @@
   <body>
     <div id="coordinates">
       <!--<label for="latitude">Latitude:</label>-->
-      <input type="text" id="lat" placeholder="Enter Latitude"/> <br />
+      <input type="text" id="lat" placeholder="Enter Latitude" /> <br />
       <!--<label for="longitude">Longitude:</label>-->
-      <input type="text" id="long" placeholder="Enter Longitude"/><br />
+      <input type="text" id="long" placeholder="Enter Longitude" /><br />
       <button id="submitBtn">Submit</button>
     </div>
     <div id="map"></div>
 
-    <!--=========POP UP ===============-->
+    <!--========= pop up ===============-->
     <div id="customPopup" class="popup">
       <div class="popup-content">
-        <!--========LOADER HTML=========-->
+        <!--======== loader html =========-->
         <div id="loader" class="loader"></div>
         <span class="popup-close-btn" onclick="closePopup()">&times;</span>
         <h2 id="popupTitle"></h2>
@@ -158,24 +160,24 @@
     ></script>
   </body>
   <script>
-    // ====== pop up display on post request sent ======
+    // ====== display the pop up after post request sent ======
     function openPopup(title, message) {
       document.getElementById("popupTitle").textContent = title;
       document.getElementById("popupMessage").textContent = message;
       document.getElementById("customPopup").style.display = "block";
     }
 
-    //=======pop up data updated on response come =======
+    //======= after the response cone, the pop up data updated =======
     function updatePopup(title, message) {
       document.getElementById("popupTitle").textContent = title;
       document.getElementById("popupMessage").innerHTML = message;
     }
-    //======= pop up close ==============================
+    //======= to close the pop up ========
     function closePopup() {
       document.getElementById("customPopup").style.display = "none";
     }
 
-    //========== FOR MAP CLICK EVENT ==================
+    //========== for map click event ==========
     let mapOptions = {
       center: [23.473324, 77.947998],
       zoom: 10,
@@ -189,7 +191,7 @@
     let marker = null;
 
     map.on("click", (event) => {
-      // ========Opening pop up and loader ===========
+      // ======== Opening the pop up and loader ==========
       openPopup("Loading", "Please wait...");
       document.getElementById("loader").style.display = "block";
 
@@ -202,7 +204,7 @@
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       });
-      // ==========sending post request ========
+      // ========= sending post request ========
       fetch("/api/save-coordinates/", {
         method: "POST",
         headers: {
@@ -210,7 +212,7 @@
         },
         body: data,
       })
-        //==========receiving request ============
+        //======== receiving the request ==========
         .then((response) => {
           document.getElementById("loader").style.display = "none";
           if (!response.ok) {
@@ -219,7 +221,7 @@
           return response.json();
         })
         .then((data) => {
-          //===========Format the data=================
+          //========= to format the data ============
           if (
             data &&
             data.coordinate &&
@@ -230,9 +232,9 @@
             let lati = data.coordinate[0].toFixed(7);
             let longi = data.coordinate[1].toFixed(7);
             const formattedData = `
-            <p>Coordinate: [${lati}, ${longi}]</p>
             <p>Road Name: ${data.road_name}</p>
-            <p>Curvature Radius: ${data.radius.toFixed(3)} meters</p>
+            <p>Coordinate: [${lati}, ${longi}]</p>
+            <p>Radius of Curvature: ${data.radius.toFixed(3)} meters</p>
             <p>Point of Curvature: [${data.pc[0]}, ${data.pc[1]}]</p>
             <p>Point of Tangency: [${data.pt[0]}, ${data.pt[1]}]</p>
             `;
@@ -247,9 +249,9 @@
         });
     });
 
-    // ================ FOR INPUT LATITUDE AND LONGITUDE EVENT ================
+    // ============== for input (latitude and logitude) event ================
     document.getElementById("submitBtn").addEventListener("click", function () {
-      // ========Opening pop up and loader ===========
+      // ========= Opening pop up and loader ===========
       openPopup("Loading", "Please wait...");
       document.getElementById("loader").style.display = "block";
 
@@ -281,7 +283,7 @@
         },
         body: data,
       })
-        //==========receiving request ============
+        //========= receiving the request ============
         .then((response) => {
           document.getElementById("loader").style.display = "none";
           if (!response.ok) {
@@ -290,7 +292,7 @@
           return response.json();
         })
         .then((data) => {
-          //===========Format the data=================
+          //=========== to format the data =============
           if (
             data &&
             data.coordinate &&

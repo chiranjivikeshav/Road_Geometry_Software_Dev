@@ -10,6 +10,7 @@ import overpy
 from decimal import Decimal
 from django.http import HttpResponse
 
+
 def home(request):
     return render(request, 'home.html')
 
@@ -19,7 +20,7 @@ def save_coordinates(request):
     if request.method == 'POST':
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
-       
+
         osrm_url = f"http://router.project-osrm.org/nearest/v1/driving/{longitude},{latitude}"
         response = requests.get(osrm_url)
         data = response.json()
@@ -31,22 +32,24 @@ def save_coordinates(request):
                 for i, j in segment2:
                     if (geodesic((i, j), coord).meters > 25):
                         segment2.remove((i, j))
-                radius  =  radius_of_curvature(segment2, coord)
-                segment = get_nearby_road_segment(coord, 20, 100)
-                road_name = get_road_name(latitude,longitude)
+                radius = radius_of_curvature(segment2, coord)
+                segment = get_nearby_road_segment(coord, 15, 200)
+                road_name = get_road_name(latitude, longitude)
                 ans = find_pt_pc(segment, segment2, coord)
+                print("PT:", ans[0])
+                print("PC:", ans[1])
                 data = {
-                    "coordinate" : coord,
-                    "radius" : radius,
-                    "pc": ans[0],
-                    "pt" : ans[1],
-                    "road_name":road_name,
+                    "coordinate": coord,
+                    "radius": radius,
+                    "pc": ans[1],
+                    "pt": ans[0],
+                    "road_name": road_name,
                 }
-                return JsonResponse(data)  
+                return JsonResponse(data)
     return JsonResponse({'message': 'Road Data Not Found!'})
 
 
-def get_nearby_road_segment(coord, num_points=10, radius=100):
+def get_nearby_road_segment(coord, num_points=15, radius=200):
     api = overpy.Overpass()
     lat, lon = map(Decimal, coord)
     bbox = (lat - Decimal('0.01'), lon - Decimal('0.01'),
@@ -81,6 +84,7 @@ def radius_of_curvature(segment, given_point):
     all_radius = [r for r in all_radius if r is not None]
     if all_radius:
         median_radius = np.median(all_radius)
+        print("ROC at the given point is ", median_radius)
     return median_radius
 
 
@@ -115,7 +119,7 @@ def get_road_name(latitude, longitude):
         if road_name:
             return road_name
     return "No road name found"
-        
+
 
 def find_pt_pc(segment, segment2, given_point):
     left = []
@@ -139,7 +143,7 @@ def find_pt_pc(segment, segment2, given_point):
     for point in left:
         segment3 = get_nearby_road_segment(point)
         point_roc = radius_of_curvature(segment3, point)
-        if point_roc is not None and abs(point_roc - given_roc) >= 200.00:
+        if point_roc is not None and abs(point_roc - given_roc) >= 300.00:
             pt = point
             break
 
@@ -157,7 +161,7 @@ def find_pt_pc(segment, segment2, given_point):
     for point in right:
         segment4 = get_nearby_road_segment(point)
         point_roc2 = radius_of_curvature(segment4, point)
-        if point_roc2 is not None and abs(point_roc2 - given_roc) >= 200.00:
+        if point_roc2 is not None and abs(point_roc2 - given_roc) >= 300.00:
             pc = point
             break
 
