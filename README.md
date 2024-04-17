@@ -62,8 +62,7 @@ After setting up the project, you can use it by navigating to the web interface 
 ## Contributing
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. Make sure Git is installed in your machine. 
 
-1. Fork the Project : You can Folk the repository form [GitHub page] 
-(https://github.com/chiranjivikeshav/Road_Geometry_Software_Dev). There is a folk button on top-right corner.
+1. Fork the Project : You can Folk the repository form [GitHub page] (https://github.com/chiranjivikeshav/Road_Geometry_Software_Dev). There is a folk button on top-right corner.
 2. Follow the installation process which is descibed above. Make sure you clone the repository instead of downloding it and 
 now for cloning the command is <br>                                                                                          `git clone https://github.com/YOUR_GITHUB_USERNAME/Road_Geometry_Software_Dev.git`
 3. Create your Feature which you want to contribute
