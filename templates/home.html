@@ -192,7 +192,7 @@
 
     map.on("click", (event) => {
       // ======== Opening the pop up and loader ==========
-      openPopup("Loading", "Please wait...");
+      openPopup("Loading...", "Please wait");
       document.getElementById("loader").style.display = "block";
 
       if (marker != null) {
@@ -252,7 +252,7 @@
     // ============== for input (latitude and logitude) event ================
     document.getElementById("submitBtn").addEventListener("click", function () {
       // ========= Opening pop up and loader ===========
-      openPopup("Loading", "Please wait...");
+      openPopup("Loading...", "Please wait");
       document.getElementById("loader").style.display = "block";
 
       let latitude = parseFloat(document.getElementById("lat").value);
